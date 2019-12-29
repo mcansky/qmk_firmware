@@ -15,6 +15,23 @@
  */
 #include QMK_KEYBOARD_H
 
+enum {
+  TD_T_ESC = 0,
+  TD_GRV_TILD,
+  TD_DASH_UNDS,
+  TD_QUOT_DQUO,
+  TD_SLSH_QUES,
+  TD_SCLN_COLN
+};
+qk_tap_dance_action_t tap_dance_actions[] = {
+  [TD_T_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_T, KC_ESC),
+  [TD_GRV_TILD] = ACTION_TAP_DANCE_DOUBLE(KC_GRV, KC_TILD),
+  [TD_DASH_UNDS] = ACTION_TAP_DANCE_DOUBLE(KC_MINS, KC_UNDS),
+  [TD_QUOT_DQUO] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_DQUO),
+  [TD_SLSH_QUES] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_QUES),
+  [TD_SCLN_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SCLN, KC_COLN)
+};
+
 enum layers {
     _QWERTY = 0,
     _LOWER,
@@ -28,29 +45,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *
  */
     [_QWERTY] = LAYOUT(
-		KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSLS,
-		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT,
-		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT, KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT,
-		KC_UP, KC_DOWN, KC_BSPC, LT(2,KC_NO), KC_RGUI, KC_ENT, LT(1,KC_NO), KC_SPC, KC_LEFT, KC_RGHT
+		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, TD(TD_T_ESC),		KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
+		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
+		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT,	KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+			KC_UP, KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
  * Lower Layer: Numbers and Symbols
  *
  */
     [_LOWER] = LAYOUT(
-		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS,
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_LBRC, KC_UP, KC_RBRC, KC_BSLS, KC_EQL,
-		KC_LSFT, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_DOWN, KC_RGHT,
-		KC_NO, KC_RSFT, KC_PGUP, KC_PGDN, KC_BSPC, LT(2,KC_NO), KC_LGUI, KC_ENT, LT(0,KC_NO), KC_SPC, KC_NO, KC_NO
+		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,							KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS,
+		KC_NO, KC_LCBR, KC_LPRN, KC_PIPE, KC_RPRN, KC_RCBR,				KC_LBRC, KC_LEFT, KC_UP, KC_RGHT, KC_RBRC, KC_EQL,
+		KC_LSFT, KC_NO, KC_LBRC, KC_NO, KC_RBRC, KC_NO,	KC_NO, KC_NO,	KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_NO, KC_NO, KC_RSFT,
+			KC_PGUP, KC_PGDN, KC_BSPC, LT(2,KC_NO), KC_LGUI,			KC_ENT, LT(0,KC_NO), KC_SPC, KC_NO, KC_NO
 	),
 /*
  * Raise Layer: media and navigation
  */
     [_RAISE] = LAYOUT(
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_BRIU, KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
-		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID, KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO, KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
+		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_BRIU,					KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
+		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID,			KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
+		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+			KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO,				KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
 	),
 /*
  * Adjust Layer: Function keys, RGB
@@ -107,44 +124,38 @@ static void render_kyria_logo(void) {
     oled_write_raw_P(kyria_logo, sizeof(kyria_logo));
 }
 
-static void render_qmk_logo(void) {
-  static const char PROGMEM qmk_logo[] = {
-    0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
-    0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
-    0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
-
-  oled_write_P(qmk_logo, false);
-}
-
 static void render_status(void) {
-    // QMK Logo and version information
-    render_qmk_logo();
-    oled_write_P(PSTR("Imfiny rev0.1\n\n"), false);
+	if (is_keyboard_master()) {
+		oled_write_P(PSTR("Imfiny rev0.4\n\n"), false);
+        oled_write_P(PSTR("#> "), false);
+	} else {
+		oled_write_P(PSTR("$> "), false);
+	}
 
-    // Host Keyboard Layer Status
-    oled_write_P(PSTR("Layer: "), false);
-    switch (get_highest_layer(layer_state)) {
-        case _QWERTY:
-            oled_write_P(PSTR("Default\n"), false);
-            break;
-        case _LOWER:
-            oled_write_P(PSTR("Numbers\n"), false);
-            break;
-        case _RAISE:
-            oled_write_P(PSTR("Media\n"), false);
-            break;
-        case _ADJUST:
-            oled_write_P(PSTR("Adjust\n"), false);
-            break;
-        default:
-            oled_write_P(PSTR("Undefined\n"), false);
-    }
 
-    // Host Keyboard LED Status
-    uint8_t led_usb_state = host_keyboard_leds();
-    oled_write_P(IS_LED_ON(led_usb_state, USB_LED_NUM_LOCK) ? PSTR("NUMLCK ") : PSTR("       "), false);
-    oled_write_P(IS_LED_ON(led_usb_state, USB_LED_CAPS_LOCK) ? PSTR("CAPLCK ") : PSTR("       "), false);
-    oled_write_P(IS_LED_ON(led_usb_state, USB_LED_SCROLL_LOCK) ? PSTR("SCRLCK ") : PSTR("       "), false);
+	// Host Keyboard Layer Status
+	switch (get_highest_layer(layer_state)) {
+		case _QWERTY:
+			oled_write_P(PSTR("Default\n"), false);
+			break;
+		case _LOWER:
+			oled_write_P(PSTR("Numbers\n"), false);
+			break;
+		case _RAISE:
+			oled_write_P(PSTR("Media\n"), false);
+			break;
+		case _ADJUST:
+			oled_write_P(PSTR("Adjust\n"), false);
+			break;
+		default:
+			oled_write_P(PSTR("Undefined\n"), false);
+	}
+
+	// Host Keyboard LED Status
+	uint8_t led_usb_state = host_keyboard_leds();
+	oled_write_P(IS_LED_ON(led_usb_state, USB_LED_NUM_LOCK) ? PSTR("NUMLCK ") : PSTR("       "), false);
+	oled_write_P(IS_LED_ON(led_usb_state, USB_LED_CAPS_LOCK) ? PSTR("CAPLCK ") : PSTR("       "), false);
+	oled_write_P(IS_LED_ON(led_usb_state, USB_LED_SCROLL_LOCK) ? PSTR("SCRLCK ") : PSTR("       "), false);
 }
 
 void oled_task_user(void) {
@@ -152,27 +163,6 @@ void oled_task_user(void) {
         render_status(); // Renders the current keyboard state (layer, lock, caps, scroll, etc)
     } else {
         render_kyria_logo();
-    }
-}
-#endif
-
-#ifdef ENCODER_ENABLE
-void encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        // Volume control
-        if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
-    }
-    else if (index == 1) {
-        // Page up/Page down
-        if (clockwise) {
-            tap_code(KC_PGDN);
-        } else {
-            tap_code(KC_PGUP);
-        }
     }
 }
 #endif
