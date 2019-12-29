@@ -23,12 +23,19 @@ enum {
   TD_SLSH_QUES,
   TD_SCLN_COLN
 };
+
 qk_tap_dance_action_t tap_dance_actions[] = {
+  // ~ Esc
   [TD_T_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_T, KC_ESC),
+  // ` ~
   [TD_GRV_TILD] = ACTION_TAP_DANCE_DOUBLE(KC_GRV, KC_TILD),
+  // - _
   [TD_DASH_UNDS] = ACTION_TAP_DANCE_DOUBLE(KC_MINS, KC_UNDS),
+  // ' "
   [TD_QUOT_DQUO] = ACTION_TAP_DANCE_DOUBLE(KC_QUOT, KC_DQUO),
+  // / ?
   [TD_SLSH_QUES] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_QUES),
+  // ; :
   [TD_SCLN_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SCLN, KC_COLN)
 };
 
