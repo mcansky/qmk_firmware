@@ -15,17 +15,104 @@
  */
 #include QMK_KEYBOARD_H
 
+typedef struct {
+  bool is_press_action;
+  int state;
+} tap;
+
+//Define a type for as many tap dance states as you need
+enum {
+  SINGLE_TAP = 1,
+  SINGLE_HOLD = 2,
+  DOUBLE_TAP = 3
+};
+
+//Define layers
+enum layers {
+    _QWERTY = 0,
+    _LOWER,
+    _RAISE,
+    _COLEMAK,
+    _ADJUST
+};
+
+//Declare the functions to be used with your tap dance key(s)
+
+//Function associated with all tap dances
+int cur_dance (qk_tap_dance_state_t *state);
+
+//Functions associated with COLEMAK / QWERTY
+void clmk_toggle (qk_tap_dance_state_t *state, void *user_data);
+void clmk_reset (qk_tap_dance_state_t *state, void *user_data);
+
+//Determine the current tap dance state
+int cur_dance (qk_tap_dance_state_t *state) {
+  if (state->count == 1) {
+    if (!state->pressed) {
+      return SINGLE_TAP;
+    } else {
+      return SINGLE_HOLD;
+    }
+  } else if (state->count == 2) {
+    return DOUBLE_TAP;
+  }
+  else return 8;
+}
+
+//Initialize tap structure associated with example tap dance key
+static tap cmlk_tap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+//Toggle colemak / qwerty
+void clmk_toggle (qk_tap_dance_state_t *state, void *user_data) {
+  cmlk_tap_state.state = cur_dance(state);
+  switch (cmlk_tap_state.state) {
+    case SINGLE_TAP:
+      tap_code(KC_UP);
+      break;
+    case SINGLE_HOLD:
+      tap_code(KC_UP);
+      break;
+    case DOUBLE_TAP:
+      //check to see if the layer is already set
+      if (layer_state_is(_COLEMAK)) {
+        //if already set, then switch it off
+        layer_off(_COLEMAK);
+      } else {
+        //if not already set, then switch the layer on
+        layer_on(_COLEMAK);
+      }
+      break;
+  }
+}
+
+void clmk_reset (qk_tap_dance_state_t *state, void *user_data) {
+  // if key is held down it should work fine as LSFT
+  if (cmlk_tap_state.state==SINGLE_HOLD) {
+    tap_code(KC_LSFT);
+  }
+}
+
+
+// -------------------------------------------------
+
 enum {
   TD_T_ESC = 0,
+  TD_G_ESC,
   TD_GRV_TILD,
   TD_DASH_UNDS,
   TD_QUOT_DQUO,
   TD_SLSH_QUES,
-  TD_SCLN_COLN
+  TD_SCLN_COLN,
+  TD_UP_CLMK
 };
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  // ~ Esc
+  // G Esc
+  [TD_G_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_G, KC_ESC),
+  // T Esc
   [TD_T_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_T, KC_ESC),
   // ` ~
   [TD_GRV_TILD] = ACTION_TAP_DANCE_DOUBLE(KC_GRV, KC_TILD),
@@ -36,14 +123,9 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   // / ?
   [TD_SLSH_QUES] = ACTION_TAP_DANCE_DOUBLE(KC_SLSH, KC_QUES),
   // ; :
-  [TD_SCLN_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SCLN, KC_COLN)
-};
-
-enum layers {
-    _QWERTY = 0,
-    _LOWER,
-    _RAISE,
-    _ADJUST
+  [TD_SCLN_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SCLN, KC_COLN),
+  // Up CLMK / QWRT
+  [TD_UP_CLMK] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, clmk_toggle, clmk_reset, 275),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -52,29 +134,39 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *
  */
     [_QWERTY] = LAYOUT(
-		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, TD(TD_T_ESC),		KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
-		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
-		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT,	KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
-			KC_UP, KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
+		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, TD(TD_T_ESC),	          	KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
+		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						                    KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
+		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT,   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+			TD(TD_UP_CLMK), KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			         KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
  * Lower Layer: Numbers and Symbols
  *
  */
     [_LOWER] = LAYOUT(
-		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,							KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS,
-		KC_NO, KC_LCBR, KC_LPRN, KC_PIPE, KC_RPRN, KC_RCBR,				KC_LBRC, KC_LEFT, KC_UP, KC_RGHT, KC_RBRC, KC_EQL,
-		KC_LSFT, KC_NO, KC_LBRC, KC_NO, KC_RBRC, KC_NO,	KC_NO, KC_NO,	KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_NO, KC_NO, KC_RSFT,
-			KC_PGUP, KC_PGDN, KC_BSPC, LT(2,KC_NO), KC_LGUI,			KC_ENT, LT(0,KC_NO), KC_SPC, KC_NO, KC_NO
+		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,							                  KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS,
+		KC_NO, KC_LCBR, KC_LPRN, KC_PIPE, KC_RPRN, KC_RCBR,				          KC_LBRC, KC_LEFT, KC_UP, KC_RGHT, KC_RBRC, KC_EQL,
+		KC_LSFT, KC_NO, KC_LBRC, KC_NO, KC_RBRC, KC_NO,	KC_NO, KC_NO,       KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_NO, KC_NO, KC_RSFT,
+			KC_PGUP, KC_PGDN, KC_BSPC, LT(2,KC_NO), KC_LGUI,			        KC_ENT, LT(0,KC_NO), KC_SPC, KC_NO, KC_NO
 	),
 /*
  * Raise Layer: media and navigation
  */
     [_RAISE] = LAYOUT(
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_BRIU,					KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
-		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID,			KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-			KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO,				KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
+		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_BRIU,					                KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
+		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID,			            KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
+		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,		          KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+			KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO,				              KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
+	),
+/*
+ * Base Layer: COLEMAK
+ *
+ */
+    [_COLEMAK] = LAYOUT(
+		TD(TD_GRV_TILD), KC_Q, KC_W, KC_F, KC_P, TD(TD_G_ESC),		            KC_J, KC_L, KC_U, KC_Y, KC_COLN, TD(TD_DASH_UNDS),
+		KC_TAB, KC_A, KC_R, KC_S, KC_T, KC_D,						                      KC_H, KC_N, KC_E, KC_I, KC_O, TD(TD_QUOT_DQUO),
+		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT,              KC_PGUP, KC_PGDN, KC_K, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+			TD(TD_UP_CLMK), KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
  * Adjust Layer: Function keys, RGB
@@ -133,7 +225,7 @@ static void render_kyria_logo(void) {
 
 static void render_status(void) {
 	if (is_keyboard_master()) {
-		oled_write_P(PSTR("Imfiny rev0.4\n\n"), false);
+		oled_write_P(PSTR("Imfiny rev0.5g\n\n"), false);
         oled_write_P(PSTR("#> "), false);
 	} else {
 		oled_write_P(PSTR("$> "), false);
@@ -153,6 +245,9 @@ static void render_status(void) {
 			break;
 		case _ADJUST:
 			oled_write_P(PSTR("Adjust\n"), false);
+			break;
+		case _COLEMAK:
+			oled_write_P(PSTR("Colemak\n"), false);
 			break;
 		default:
 			oled_write_P(PSTR("Undefined\n"), false);
