@@ -99,7 +99,7 @@ void clmk_reset (qk_tap_dance_state_t *state, void *user_data) {
 // -------------------------------------------------
 
 enum {
-  TD_T_ESC = 0,
+  TD_LALT_ESC = 0,
   TD_G_ESC,
   TD_GRV_TILD,
   TD_DASH_UNDS,
@@ -112,8 +112,8 @@ enum {
 qk_tap_dance_action_t tap_dance_actions[] = {
   // G Esc
   [TD_G_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_G, KC_ESC),
-  // T Esc
-  [TD_T_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_T, KC_ESC),
+  // Alt Esc
+  [TD_LALT_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_ESC),
   // ` ~
   [TD_GRV_TILD] = ACTION_TAP_DANCE_DOUBLE(KC_GRV, KC_TILD),
   // - _
@@ -134,9 +134,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *
  */
     [_QWERTY] = LAYOUT(
-		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, TD(TD_T_ESC),	          	KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
+		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, KC_T,	          	KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
 		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						                    KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
-		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, KC_LALT,   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, TD(TD_LALT_ESC),   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
 			TD(TD_UP_CLMK), KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			         KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
