@@ -15,6 +15,35 @@
  */
 #include QMK_KEYBOARD_H
 
+
+// Macro
+enum custom_keycodes {
+  M_LEFT_DESKTOP = SAFE_RANGE,
+  M_RIGHT_DESKTOP,
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case M_LEFT_DESKTOP:
+      if (record->event.pressed) {
+        // switch to left desktop
+        SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)));
+      }
+      break;
+    case M_RIGHT_DESKTOP:
+      if (record->event.pressed) {
+        // switch to right desktop
+        SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT)));
+      }
+      break;
+
+  }
+  return true;
+};
+
+// --- end macro ---
+
+
 typedef struct {
   bool is_press_action;
   int state;
@@ -153,7 +182,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Raise Layer: media and navigation
  */
     [_RAISE] = LAYOUT(
-		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_BRIU,					                KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
+		KC_NO, M_LEFT_DESKTOP, KC_NO, KC_NO, M_RIGHT_DESKTOP, KC_BRIU,					                KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
 		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID,			            KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
 		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,		          KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
 			KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO,				              KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
