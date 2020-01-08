@@ -53,7 +53,8 @@ typedef struct {
 enum {
   SINGLE_TAP = 1,
   SINGLE_HOLD = 2,
-  DOUBLE_TAP = 3
+  DOUBLE_TAP = 3,
+  DOUBLE_HOLD = 4
 };
 
 //Define layers
@@ -70,10 +71,6 @@ enum layers {
 //Function associated with all tap dances
 int cur_dance (qk_tap_dance_state_t *state);
 
-//Functions associated with COLEMAK / QWERTY
-void clmk_toggle (qk_tap_dance_state_t *state, void *user_data);
-void clmk_reset (qk_tap_dance_state_t *state, void *user_data);
-
 //Determine the current tap dance state
 int cur_dance (qk_tap_dance_state_t *state) {
   if (state->count == 1) {
@@ -83,10 +80,19 @@ int cur_dance (qk_tap_dance_state_t *state) {
       return SINGLE_HOLD;
     }
   } else if (state->count == 2) {
-    return DOUBLE_TAP;
+    if (!state->pressed) {
+      return DOUBLE_TAP;
+    } else {
+      return DOUBLE_HOLD;
+    }
   }
   else return 8;
 }
+
+// ---- ---- ---- ---- ----
+//Functions associated with COLEMAK / QWERTY
+void clmk_toggle (qk_tap_dance_state_t *state, void *user_data);
+void clmk_reset (qk_tap_dance_state_t *state, void *user_data);
 
 //Initialize tap structure associated with example tap dance key
 static tap cmlk_tap_state = {
@@ -94,6 +100,8 @@ static tap cmlk_tap_state = {
   .state = 0
 };
 
+//single tap, single hold, double tap, double tap hold
+// KC_UP    , KC_UP,     , Colemak toggle, _
 //Toggle colemak / qwerty
 void clmk_toggle (qk_tap_dance_state_t *state, void *user_data) {
   cmlk_tap_state.state = cur_dance(state);
@@ -124,6 +132,44 @@ void clmk_reset (qk_tap_dance_state_t *state, void *user_data) {
   }
 }
 
+// ---- ---- ---- ---- ----
+//Functions associated with shift - ctrl tap dance
+void shift_ctrl_toggle (qk_tap_dance_state_t *state, void *user_data);
+void shift_ctrl_reset (qk_tap_dance_state_t *state, void *user_data);
+
+//Initialize tap structure associated with example tap dance key
+static tap lsft_tap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+//single tap, single hold, double tap, double tap hold
+//_         , Shift,     , _         , Ctrl
+void shift_ctrl_toggle (qk_tap_dance_state_t *state, void *user_data) {
+  lsft_tap_state.state = cur_dance(state);
+  switch (lsft_tap_state.state) {
+    case SINGLE_TAP:
+      register_code(KC_LSFT);
+      break;
+    case SINGLE_HOLD:
+      register_code(KC_LSFT);
+      break;
+    case DOUBLE_TAP:
+      register_code(KC_LSFT);
+      break;
+    case DOUBLE_HOLD:
+      register_code(KC_LCTL);
+      break;
+  }
+}
+
+void shift_ctrl_reset (qk_tap_dance_state_t *state, void *user_data) {
+  // if key is held down it should work fine as LSFT
+  if (lsft_tap_state.state==SINGLE_HOLD) {
+    tap_code(KC_LSFT);
+  }
+}
+
 
 // -------------------------------------------------
 
@@ -135,7 +181,8 @@ enum {
   TD_QUOT_DQUO,
   TD_SLSH_QUES,
   TD_SCLN_COLN,
-  TD_UP_CLMK
+  TD_UP_CLMK,
+  TD_SHIFT_CTRL,
 };
 
 qk_tap_dance_action_t tap_dance_actions[] = {
@@ -155,6 +202,8 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [TD_SCLN_COLN] = ACTION_TAP_DANCE_DOUBLE(KC_SCLN, KC_COLN),
   // Up CLMK / QWRT
   [TD_UP_CLMK] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, clmk_toggle, clmk_reset, 275),
+  // Shift Shift Ctrl _
+  [TD_SHIFT_CTRL] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, shift_ctrl_toggle, shift_ctrl_reset, 275),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -165,7 +214,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT(
 		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, KC_T,	          	KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
 		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						                    KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
-		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, TD(TD_LALT_ESC),   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+		TD(TD_SHIFT_CTRL), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, TD(TD_LALT_ESC),   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
 			TD(TD_UP_CLMK), KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			         KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
