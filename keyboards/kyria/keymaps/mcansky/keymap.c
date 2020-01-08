@@ -165,9 +165,13 @@ void shift_ctrl_toggle (qk_tap_dance_state_t *state, void *user_data) {
 
 void shift_ctrl_reset (qk_tap_dance_state_t *state, void *user_data) {
   // if key is held down it should work fine as LSFT
+  if (lsft_tap_state.state==DOUBLE_HOLD) {
+    tap_code(KC_LCTL);
+  }
   if (lsft_tap_state.state==SINGLE_HOLD) {
     tap_code(KC_LSFT);
   }
+  lsft_tap_state.state = 0;
 }
 
 
