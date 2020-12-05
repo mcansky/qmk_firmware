@@ -211,14 +211,14 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-/* 
+/*
  * Base Layer: QWERTY
  *
  */
     [_QWERTY] = LAYOUT(
-		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, KC_T,	          	KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
+		TD(TD_GRV_TILD), KC_Q, KC_W, KC_E, KC_R, KC_T,	          	        KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_DASH_UNDS),
 		KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G,						                    KC_H, KC_J, KC_K, KC_L, TD(TD_SCLN_COLN), TD(TD_QUOT_DQUO),
-		TD(TD_SHIFT_CTRL), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, TD(TD_LALT_ESC),   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
+		KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_LCTL, TD(TD_LALT_ESC),   KC_PGUP, KC_PGDN, KC_N, KC_M, KC_COMM, KC_DOT, TD(TD_SLSH_QUES), KC_RSFT,
 			TD(TD_UP_CLMK), KC_DOWN, KC_BSPC, LT(2,KC_BSPC), KC_LGUI,			         KC_ENT, LT(1,KC_SPC), KC_SPC, KC_LEFT, KC_RGHT
 	),
 /*
@@ -235,10 +235,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Raise Layer: media and navigation
  */
     [_RAISE] = LAYOUT(
-		KC_NO, M_LEFT_DESKTOP, KC_NO, KC_NO, M_RIGHT_DESKTOP, KC_BRIU,					                KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
+		KC_NO, M_LEFT_DESKTOP, KC_NO, KC_NO, M_RIGHT_DESKTOP, KC_BRIU,			KC_NO, KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_NO,
 		KC_NO, KC_WSCH, KC_WBAK, KC_WHOM, KC_WFWD, KC_BRID,			            KC_NO, KC_MPRV, KC_MPLY, KC_MNXT, KC_NO, KC_NO,
 		KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,		          KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-			KC_NO, KC_NO, KC_NO, LT(0,KC_NO), KC_NO,				              KC_NO, LT(1,KC_NO), KC_NO, KC_NO, KC_NO
+			KC_F3, KC_F4, KC_F5, LT(0,KC_NO), KC_NO,				              KC_NO, LT(1,KC_NO), KC_F6, KC_F7, KC_F8
 	),
 /*
  * Base Layer: COLEMAK
